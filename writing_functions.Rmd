@@ -1,0 +1,130 @@
+---
+title: "writing_functions"
+output: github_document
+---
+
+```{r package, include=FALSE}
+library(tidyverse)
+library(rvest)
+```
+
+```{r}
+set.seed(1)
+```
+
+## My first function
+### Z-score
+```{r}
+x_vec = rnorm(25, mean = 5, sd = 4)
+
+(x_vec - mean(x_vec)) / sd(x_vec)
+```
+
+```{r}
+z_scores = function(x) {
+  
+  z = (x - mean(x)) / sd(x)
+  return(z)
+  
+}
+
+z_scores(x = x_vec)
+```
+
+How great is it?
+
+```{r}
+# more than 2 numbers
+z_scores(3)
+
+z_scores("feniofgr")
+
+z_scores(mtcars)
+```
+Try again
+
+```{r}
+z_scores = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop("x needs to be numeric")
+  }
+  
+  if (length(x) < 3) {
+    stop("x should have at least 3 numbers")
+  }
+  
+  z = (x - mean(x)) / sd(x)
+  return(z)
+  
+}
+
+z_scores(x = x_vec)
+```
+
+# Multiple outputs
+
+```{r}
+mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop("x needs to be numeric")
+  }
+  
+  if (length(x) < 3) {
+    stop("x should have at least 3 numbers")
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
+  
+  output_df = 
+    tibble(
+      mean = mean_x,
+      sd = sd_x
+    )
+  return(output_df)
+  
+}
+
+mean_and_sd(x = x_vec)
+
+# debugging, let x = y_vec to check the output
+# and after, rm(x)
+```
+## Different sample sizes, means, sds
+
+```{r}
+sim_data = 
+  tibble(
+    x = rnorm(30, mean = 2, sd = 3)
+  )
+
+sim_data %>%
+  summarise(
+    mean = mean(x),
+    sd = sd(x)
+  )
+```
+Let's write function that simulate data, computes the mean and sd
+
+```{r}
+sim_mean_sd = function(n, mu, sigma) {
+  
+  # do check quality of input
+  
+  sim_data = 
+    tibble(
+      x = rnorm(n, mean = mu, sd = sigma)
+    )
+  
+  sim_data %>%
+    summarise(
+      mean = mean(x),
+      sd = sd(x)
+    )
+}
+
+sim_mean_sd(30, 4, 3)
+```
+
